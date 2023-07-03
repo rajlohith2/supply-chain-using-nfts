@@ -1,0 +1,2 @@
+export const CONTRACT_ADDRESS = "0x6892aEe908416d3605555E09afFd2F037185E19f";
+export const INFURA_PROJECT_ID = "2PicqfQaerxlrsHkc8qOqDHSXlg";

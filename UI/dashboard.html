@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard</title>
+    <style>
+      #nft{
+        width: 200px;
+        height: 200px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Open Sans", sans-serif;
+        font-size: 16px;
+        overflow: hidden;
+      }
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .sidebar {
+        width: 30%;
+        height: 100%;
+        background-color: #292929;
+        color: #ffffff;
+        padding: 20px;
+      }
+      .main-content {
+        width: 70%;
+        height: 100vh;
+        background-color: #1f1f1f;
+        color: #ffffff;
+        padding: 20px;
+        overflow-y: scroll; /* enable vertical scrolling */
+        box-sizing: border-box;
+        margin: 0;
+      }
+      h1 {
+        margin-top: 0;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        height: 600px;
+        overflow-y: scroll; /* enable vertical scrolling */
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      .main-content {
+        height: 750px;
+      }
+
+      #medicine-details {
+        display: none;
+        overflow-y: scroll; /* enable vertical scrolling */
+        box-sizing: border-box;
+        margin: 0;
+        height: 100%;
+      }
+      li {
+        margin-bottom: 10px;
+      }
+      a {
+        color: #ffffff;
+        text-decoration: none;
+      }
+      a:hover {
+        color: #dddddd;
+      }
+      .card {
+        background-color: #ffffff;
+        border: 1px solid #dddddd;
+        border-radius: 5px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 18px;
+        color: #777777;
+      }
+
+      p {
+        margin-top: 0;
+        margin-bottom: 0;
+        font-size: 14px;
+        color: #777777;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+      }
+
+      table th,
+      table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #dddddd;
+      }
+
+      table th {
+        font-weight: bold;
+        text-transform: uppercase;
+        background-color: #292929;
+        color: #ffffff;
+      }
+
+      table td {
+        background-color: #444444;
+        color: #ffffff;
+      }
+
+      table tr:hover td {
+        background-color: #555555;
+      }
+      .progress-bar {
+        width: 100%;
+        height: 50px;
+        background-color: rgb(255, 255, 255);
+        border-radius: 25px;
+        position: relative;
+        margin: 20px 0;
+      }
+
+      .progress-bar-inner {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+      }
+
+      .stage {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .stage.active .stage-circle {
+        background-color: #27ae60;
+      }
+
+      .stage.active .stage-label {
+        color: #27ae60;
+      }
+
+      .stage.old .stage-label {
+        color: #3c48ca;
+      }
+
+      .stage.future .stage-label {
+        color: #ca723c;
+      }
+      .stage-circle.old {
+        background-color: #3c48ca;
+      }
+
+      .stage-circle.active {
+        background-color: #27ae60;
+      }
+
+      .stage-circle.future {
+        background-color: #ca723c;
+      }
+      .stage.active ~ .stage .stage-circle {
+        background-color: #3498db;
+      }
+
+      .stage.active ~ .stage .stage-label {
+        color: #3498db;
+      }
+
+      .stage-circle {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 2px solid #ccc;
+        transition: background-color 0.3s ease-in-out;
+      }
+
+      .stage-label {
+        margin-left: 10px;
+        font-size: 14px;
+        color: #333;
+        transition: color 0.3s ease-in-out;
+      }
+
+      .stage:hover:before {
+        position: absolute;
+        top: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 5px;
+        border-radius: 5px;
+        background-color: #333;
+        color: #fff;
+        font-size: 12px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease-in-out;
+      }
+      #message {
+        position: absolute;
+        top: 50%;
+        left: 65%;
+        transform: translate(-50%, -50%);
+      }
+      .stage:hover:before {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .nft-image {
+        width: 200px;
+        height: 200px;
+        object-fit: contain;
+      }
+      /* The modal (background) */
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgba(0, 0, 0, 0.8); /* Black w/ opacity */
+      }
+
+      /* Modal Content/Box */
+      .modal-content {
+        background-color: #292929;
+        margin: 10% auto; /* 10% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+        color: #fff;
+      }
+
+      /* Close Button */
+      .close {
+        color: #ccc;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: #fff;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      /* Form Inputs */
+      form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-gap: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      input[type="text"],
+      input[type="date"],
+      input[type="time"],
+      input[type="number"],
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: none;
+        background-color: #444;
+        color: #fff;
+        box-sizing: border-box;
+      }
+
+      input[type="submit"] {
+        background-color: #4caf50;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      input[type="submit"]:hover {
+        background-color: #3e8e41;
+      }
+      #transactionModal {
+        display: none; /* Hide the modal by default */
+        position: fixed; /* Set the position to fixed */
+        z-index: 1; /* Set the z-index to make it appear on top of other elements */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto; /* Enable scrolling if the content is too long */
+        background-color: rgba(
+          0,
+          0,
+          0,
+          0.8
+        ); /* Set a dark background with transparency */
+      }
+
+      /* Style for the transaction card container */
+      .card-container {
+        max-height: 80vh; /* Set a maximum height for the card container */
+        overflow-y: auto; /* Enable vertical scrolling if the content is too long */
+      }
+
+      /* Button styles */
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  margin: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background-color: #000;
+  border: none;
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
+}
+
+/* Button hover state */
+.btn:hover {
+  background-color: #fff;
+  color: #000;
+  cursor: pointer;
+}
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar">
+        <h1>Hello there!</h1>
+        <h1>List of Medicines Owned</h1>
+        <ul id="medicines-list"></ul>
+      </div>
+      <div class="main-content">
+        <div>
+          <h2 id="med-name"></h2>
+          <button id="create-btn" class="btn" style="display: none;">Create A New Product</button>
+
+          <div id="myModal" class="modal">
+            <div class="modal-content">
+              <div class="close" id="create-close">&times;</div>
+              <form id="create">
+                <label for="itemName">Item Name:</label>
+                <input type="text" id="itemName" name="itemName" required />
+
+                <label for="origin">Origin:</label>
+                <input type="text" id="origin" name="origin" required />
+
+                <label for="rawMaterialInfo">Raw Material Info:</label>
+                <textarea
+                  id="rawMaterialInfo"
+                  name="rawMaterialInfo"
+                ></textarea>
+
+                <label for="certifications">Certifications:</label>
+                <textarea
+                  id="certifications"
+                  name="certifications"
+                ></textarea>
+
+                <label for="productDescription">Product Description:</label>
+                <textarea
+                  id="productDescription"
+                  name="productDescription"
+                ></textarea>
+
+                <label for="manufacturingLocation"
+                  >Manufacturing Location:</label
+                >
+                <input
+                  type="text"
+                  id="manufacturingLocation"
+                  name="manufacturingLocation"
+                />
+
+                <label for="recordedTemperature">Recorded Temperature:</label>
+                <input
+                  type="number"
+                  id="recordedTemperature"
+                  name="recordedTemperature"
+                />
+
+                <label for="recordedHumidity">Recorded Humidity:</label>
+                <input
+                  type="number"
+                  id="recordedHumidity"
+                  name="recordedHumidity"
+                />
+                <label for="manufacturingLocation"
+                  >Supplier's ETH Address:</label
+                >
+                <input
+                  type="text"
+                  id="supplierAddress"
+                  name="supplierAddress"
+                />
+                <label for="nft-image">NFT Image:</label>
+                <input
+                  type="file"
+                  id="nft-image-input"
+                  name="nft-image"
+                  accept="image/*"
+                  required
+                />
+
+                <input type="submit" value="Submit" />
+              </form>
+            </div>
+          </div>
+          
+          <button class="txn-btn btn" id="logout">Logout</button>
+
+          
+        </div>
+        <div id="message">Click on a Product to view more details</div>
+        <div class="medicine-details" id="medicine-details">
+          <div class="nft-image">
+            <img
+              alt="NFT Image"
+              id="nft"
+            />
+          </div>
+          <button class="btn" id="updateBtn">Update Parameters</button>
+
+          <!-- The Update Parameters Modal -->
+          <div id="updateModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+              <span class="close" id="update-close">&times;</span>
+              <h2>Update Parameters</h2>
+              <form id="params">
+                <div class="form-group">
+                  <label for="recorded-location">Recorded Location</label>
+                  <input
+                    type="text"
+                    id="recorded-location"
+                    name="recorded-location"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="temperature">Temperature</label>
+                  <input
+                    type="number"
+                    id="recorded-temperature"
+                    name="recorded-temperature"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="humidity">Humidity</label>
+                  <input
+                    type="number"
+                    id="recorded-humidity"
+                    name="recorded-humidity"
+                  />
+                </div>
+                <input type="submit" class="btn"></input>
+              </form>
+            </div>
+          </div>
+          <button class="modal-btn btn" id="btn2">
+            Sell Product
+          </button>
+
+          <!-- The Modal -->
+          <div id="myModal2" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+              <span class="close" id="transfer-close">&times;</span>
+              <h2>Transfer Product</h2>
+              <form id="transfer">
+                <label for="recipient-eth-address"
+                  >Recipient ETH Address:</label
+                >
+                <input
+                  type="text"
+                  id="recipient-eth-address"
+                  name="recipient-eth-address"
+                  required
+                />
+
+                <label for="transaction-amount">Transaction Amount:</label>
+                <input
+                  type="number"
+                  id="transaction-amount"
+                  name="transaction-amount"
+                  required
+                />
+
+                <input type="submit" value="Send" />
+              </form>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-bar-inner">
+              <div class="stage" id="supplier">
+                <div class="stage-circle" id="supplier-circle"></div>
+                <div class="stage-label">Supplier</div>
+              </div>
+              <div class="stage" id="manufacturer">
+                <div class="stage-circle" id="manufacturer-circle"></div>
+                <div class="stage-label">Manufacturer</div>
+              </div>
+              <div class="stage" id="distributor">
+                <div class="stage-circle" id="distributor-circle"></div>
+                <div class="stage-label">Distributor</div>
+              </div>
+              <div class="stage" id="pharmacist">
+                <div class="stage-circle"  id="pharmacist-circle"></div>
+                <div class="stage-label">Pharmacy</div>
+              </div>
+              <div class="stage" id="consumer">
+                <div class="stage-circle"  id="consumer-circle"></div>
+                <div class="stage-label">Consumer</div>
+              </div>
+            </div>
+          </div>
+          <div id="progress-info" class="progress-bar-info">
+            <p>Click on a stage to see more information.</p>
+          </div>
+          <table id="med-details"></table>
+        </div>
+      </div>
+    </div>
+    <script src="web3.js"></script>
+    <script type="module" src="dashboard.js"></script>
+    <script src="https://unpkg.com/ipfs-http-client/dist/index.min.js"></script>
+  </body>
+</html>
